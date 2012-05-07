@@ -18,5 +18,10 @@
     <string name="no_value_message">選択肢がありません。新規作成して下さい。</string>
     <string name="confirm">確認</string>
     <string name="ec2_launch_required_message">以下は必須項目です。入力して下さい。\n\nInstance Type\nKey Pair\nSecurity Group</string>
+    <string name="tts_ec2_launch">Launch new instance.</string>
+    <string name="tts_ec2_terminate">Terminate instance.</string>
+    <string name="tts_ec2_reboot">Reboot instance.</string>
+    <string name="tts_ec2_start">Start instance.</string>
+    <string name="tts_ec2_stop">Stop instance.</string>
 
 </resources>

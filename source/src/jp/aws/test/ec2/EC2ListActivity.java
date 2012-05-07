@@ -46,7 +46,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Spinner;
@@ -121,7 +120,7 @@ public class EC2ListActivity extends AlertActivity implements
 
 				});
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // レイアウトを指定。アイコンなし：simple_spinner_item
-																				// アイコンあり：simple_spinner_dropdown_item
+		// アイコンあり：simple_spinner_dropdown_item
 
 		// アイテムを追加します
 		/*
@@ -161,8 +160,12 @@ public class EC2ListActivity extends AlertActivity implements
 		// (EC2Item)listView.getItemAtPosition(adapterinfo.position);
 		EC2Item ec2Item = ec2item_list_cache.get(adapterinfo.position);
 
-		if (ec2Item.stateName.equals("terminated")) {
-			// 終了したインスタンスについてはコンテキストメニューを出さない
+		// 以下条件の時はコンテキストメニューを出さない
+		if (ec2Item.stateName.equals("terminated") // 終了した
+				|| ec2Item.stateName.equals("pending") // ペンディング中
+				|| ec2Item.stateName.equals("stopping") // 停止中
+				|| ec2Item.stateName.equals("shutting-down") // 終了中
+		) {
 			return;
 		}
 
@@ -170,10 +173,12 @@ public class EC2ListActivity extends AlertActivity implements
 		menu.add(Menu.NONE, MENU_EC2_TERMINATE, Menu.NONE,
 				R.string.ec2_terminate);
 		menu.add(Menu.NONE, MENU_EC2_REBOOT, Menu.NONE, R.string.ec2_reboot);
-		if (!ec2Item.stateName.equals("running"))
+		if (!ec2Item.stateName.equals("running")) {
 			menu.add(Menu.NONE, MENU_EC2_START, Menu.NONE, R.string.ec2_start);
-		if (ec2Item.stateName.equals("running"))
+		}
+		if (ec2Item.stateName.equals("running")) {
 			menu.add(Menu.NONE, MENU_EC2_STOP, Menu.NONE, R.string.ec2_stop);
+		}
 	}
 
 	// / コンテキストメニュー選択
@@ -211,6 +216,8 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
+										AwsTestActivity.tts
+												.startTTS(getString(R.string.tts_ec2_terminate));
 										ec2Instance
 												.terminate(ec2Item.instanceId);
 									} catch (Exception e) {
@@ -241,6 +248,8 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
+										AwsTestActivity.tts
+												.startTTS(getString(R.string.tts_ec2_reboot));
 										ec2Instance.reboot(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す
@@ -270,6 +279,8 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
+										AwsTestActivity.tts
+												.startTTS(getString(R.string.tts_ec2_start));
 										ec2Instance.start(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す
@@ -300,6 +311,8 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
+										AwsTestActivity.tts
+												.startTTS(getString(R.string.tts_ec2_stop));
 										ec2Instance.stop(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す

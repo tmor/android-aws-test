@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="設定">
-    <PreferenceCategory android:title="Account"></PreferenceCategory><EditTextPreference android:title="Access Key ID" android:key="prefs_account_access_key" />
-    
+    <PreferenceCategory android:title="Account"></PreferenceCategory>
+    <EditTextPreference android:title="Access Key ID" android:key="prefs_account_access_key" />
     <EditTextPreference android:title="Secret Access Key" android:key="prefs_account_secret_key"/>
-    
-
+    <PreferenceCategory android:title="Other">
+        <CheckBoxPreference android:key="prefs_tts_enable" android:title="TTSを使用する" android:summary="日本語読み上げにはN2 TTSなどが必要です"/>
+    </PreferenceCategory>
 </PreferenceScreen>

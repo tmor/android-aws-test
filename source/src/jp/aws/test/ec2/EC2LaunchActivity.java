@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 266 $
+ * $Revision: 272 $
  */
 
 package jp.aws.test.ec2;
@@ -506,6 +506,8 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
+								AwsTestActivity.tts
+										.startTTS(getString(R.string.tts_ec2_launch));
 								LaunchTask task = new LaunchTask();
 								task.execute();
 							}

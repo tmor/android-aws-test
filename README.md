@@ -16,6 +16,7 @@ AWS(Amazon Web Service) SDK for Android テストアプリ
 - EC2詳細情報のクリップボードへコピー
 - EC2インスタンスのTerminate, Reboot, Start, Stop
 - EC2インスタンスの起動
+- TTS(TextToSpeech)でのテキスト読み上げ
 
 ## インストール
 
@@ -29,6 +30,9 @@ AWS(Amazon Web Service) SDK for Android テストアプリ
 ## 使い方
 
 - 初めにメニュー > 設定からAccess Key, Secret Access Keyを設定して下さい
+- TTSを使うためには
+  - Android メニュー > 設定 > 音声入出力 > テキスト読み上げの設定 > 音声データをインストール
+  - アプリの設定からTTSにチェック
 
 ## FAQ
 

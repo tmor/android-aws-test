@@ -8,9 +8,6 @@
  */
 package jp.aws.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,16 +20,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ListView;
 
-import jp.aws.test.MultiLineListRow;
 import jp.aws.test.AmazonClientManager;
 
-public class AwsTestActivity extends Activity {
+public class AwsTestActivity extends Activity  {
 	public static final int REQUEST_CODE_PREFS = 1;
 	public static final int REQUEST_CODE_EC2_LIST = 2;
 	public static boolean isDebug; // / デバッグ中フラグ
 	public static AmazonClientManager clientManager = null; // aws client
+	private final static String TAG = AwsTestActivity.class.getSimpleName();
+	public static TtsImpl tts = null; // tts
 
 	/** Called when the activity is first created. */
 	@Override
@@ -58,6 +55,9 @@ public class AwsTestActivity extends Activity {
 		// aws client。インスタンス生成は使用時に行われる
 		this.clientManager = new AmazonClientManager(this);
 
+		// tts初期化
+		this.tts = new TtsImpl(this);
+
 		// EC2ListActivityがルートになるように初期化
 		Intent intent = new Intent(this, jp.aws.test.ec2.EC2ListActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -67,6 +67,13 @@ public class AwsTestActivity extends Activity {
 
 		// このアクティビティに戻れないように
 		finish();
+	}
+
+	@Override
+	protected void onDestroy() {
+		tts.destroy(); // TTSの破棄
+
+		super.onDestroy();
 	}
 
 	// / メニュー作成時に1度だけ
@@ -111,9 +118,9 @@ public class AwsTestActivity extends Activity {
 
 			// プリファレンス読み込み
 			if (isDebug) {
-				Log.d("prefs_account_access_key",
+				Log.d(TAG, "prefs_account_access_key: " +
 						prefs.getString("prefs_account_access_key", ""));
-				Log.d("prefs_account_secret_key",
+				Log.d(TAG, "prefs_account_secret_key: " +
 						prefs.getString("prefs_account_secret_key", ""));
 			}
 
@@ -137,4 +144,6 @@ public class AwsTestActivity extends Activity {
 		});
 		confirm.show().show();
 	}
+
+
 }

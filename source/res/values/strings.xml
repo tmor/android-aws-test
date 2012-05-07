@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aws Test</string>
+    <string name="debug_access_key"></string>
+    <string name="debug_secret_key"></string>
+    <string name="data_loading">しばらくお待ち下さい</string>
+    <string name="region">Region:  </string>
+    <string name="menu_edit">編集</string>
+    <string name="menu_new">追加</string>
+    <string name="ec2_reboot">Reboot</string>
+    <string name="ec2_terminate">Terminate</string>
+    <string name="ec2_start">Start</string>
+    <string name="ec2_stop">Stop</string>
+    <string name="ec2_confirm_message">以下インスタンスを %s してよろしいですか?\n\n</string>
+    <string name="launch">起動</string>
+    <string name="ec2_launch_message">インスタンスを起動してよろしいですか？\n\n</string>
+    <string name="ec2_launch_title">Launch new instance(s)</string>
+    <string name="no_value_message">選択肢がありません。新規作成して下さい。</string>
+    <string name="confirm">確認</string>
+    <string name="ec2_launch_required_message">以下は必須項目です。入力して下さい。\n\nInstance Type\nKey Pair\nSecurity Group</string>
+
+</resources>

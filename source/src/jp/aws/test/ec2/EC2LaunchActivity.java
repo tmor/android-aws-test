@@ -4,13 +4,14 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 272 $
+ * $Revision: 275 $
  */
 
 package jp.aws.test.ec2;
 
 import jp.aws.test.AwsTestActivity;
 import jp.aws.test.R;
+import jp.aws.test.TtsImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -113,6 +115,10 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 		availabilityZone_cache = new ArrayList<String>();
 		securityGroup_cache = new ArrayList<String>();
 
+		cancelButton.setFocusable(true);
+		cancelButton.setFocusableInTouchMode(true);
+		cancelButton.requestFocus();
+
 		// 画面更新
 		updateView();
 	}
@@ -189,9 +195,10 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 
 		int i = 0;
 		for (String item : items) {
-			if (flags[i]) {
+			if (flags[i] == true) {
 				itemList.add(item);
 			}
+			i++;
 		}
 		return itemList;
 	}
@@ -204,6 +211,13 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 		MenuInflater inflater = getMenuInflater();
 		// XMLで定義したmenuを指定する。
 		inflater.inflate(R.menu.launch, menu);
+		return true;
+	}
+
+	// / メニュー表示毎
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
 		return true;
 	}
 

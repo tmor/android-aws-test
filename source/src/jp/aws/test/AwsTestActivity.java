@@ -8,7 +8,6 @@
  */
 package jp.aws.test;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -23,22 +22,30 @@ import android.util.Log;
 
 import jp.aws.test.AmazonClientManager;
 
-public class AwsTestActivity extends Activity  {
+public class AwsTestActivity extends Activity {
 	public static final int REQUEST_CODE_PREFS = 1;
 	public static final int REQUEST_CODE_EC2_LIST = 2;
-	public static boolean isDebug; // / デバッグ中フラグ
+	public static boolean isDebug = false; // / デバッグ中フラグ
 	public static AmazonClientManager clientManager = null; // aws client
-	private final static String TAG = AwsTestActivity.class.getSimpleName();
-	public static TtsImpl tts = null; // tts
+	private final static String TAG = AwsTestActivity.class.getPackage()
+			.getName() + "." + AwsTestActivity.class.getSimpleName();
+	public static TtsImpl tts = null; // tts.
+										// finish()するとonDestory()が呼ばれて使えなくなる
+
+	/**
+	 * staticイニシャライザ
+	 * メモリ不足の時やクラスが再ロードした際に、static変数が初期化されるためNullPointerExceptionの防止
+	 */
+	static {
+		// デバッグフラグ
+		isDebug = Debug.isDebuggerConnected();
+	}
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
-		// デバッグフラグ
-		isDebug = Debug.isDebuggerConnected();
 
 		if (isDebug) {
 			// デバッグ時にstrings.xmlの値を使う
@@ -52,26 +59,24 @@ public class AwsTestActivity extends Activity  {
 			editor.commit();
 		}
 
-		// aws client。インスタンス生成は使用時に行われる
+		// aws clientを初期化
 		this.clientManager = new AmazonClientManager(this);
 
-		// tts初期化
+		// TTSは初期化に若干時間が必要
 		this.tts = new TtsImpl(this);
 
 		// EC2ListActivityがルートになるように初期化
 		Intent intent = new Intent(this, jp.aws.test.ec2.EC2ListActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivityForResult(intent, REQUEST_CODE_EC2_LIST);
-
-		// populateContentsListView();
-
-		// このアクティビティに戻れないように
-		finish();
 	}
 
 	@Override
 	protected void onDestroy() {
-		tts.destroy(); // TTSの破棄
+		if (tts != null) {
+			tts.destroy(); // TTSの破棄
+			tts = null;
+		}
 
 		super.onDestroy();
 	}
@@ -118,10 +123,14 @@ public class AwsTestActivity extends Activity  {
 
 			// プリファレンス読み込み
 			if (isDebug) {
-				Log.d(TAG, "prefs_account_access_key: " +
-						prefs.getString("prefs_account_access_key", ""));
-				Log.d(TAG, "prefs_account_secret_key: " +
-						prefs.getString("prefs_account_secret_key", ""));
+				Log.d(TAG,
+						"prefs_account_access_key: "
+								+ prefs.getString("prefs_account_access_key",
+										""));
+				Log.d(TAG,
+						"prefs_account_secret_key: "
+								+ prefs.getString("prefs_account_secret_key",
+										""));
 			}
 
 			// プリファレンスへの書き込み
@@ -144,6 +153,5 @@ public class AwsTestActivity extends Activity  {
 		});
 		confirm.show().show();
 	}
-
 
 }

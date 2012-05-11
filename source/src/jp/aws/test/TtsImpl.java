@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 272 $
+ * $Revision: 275 $
  */
 package jp.aws.test;
 
@@ -24,6 +24,9 @@ public class TtsImpl implements TextToSpeech.OnInitListener {
 	public TtsImpl(Activity activity) {
 		this.activity = activity;
 		// TTS初期化
+		if(tts != null){
+			destroy();
+		}
 		tts = new TextToSpeech(activity, this);
 	}
 
@@ -31,6 +34,7 @@ public class TtsImpl implements TextToSpeech.OnInitListener {
 		if (tts != null) {
 			tts.stop();
 			tts.shutdown();
+			tts = null;
 		}
 	}
 

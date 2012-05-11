@@ -2,5 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 編集メニュー -->
     <item android:id="@+id/Back" android:title="戻る" android:icon="@drawable/ic_menu_back"></item>
-    <item android:id="@+id/Clipboard" android:title="クリップボードへコピー"></item>
+    <item android:id="@+id/Clipboard" android:title="全てコピー" android:icon="@drawable/ic_menu_clip"></item>
+    <item android:id="@+id/Clipboard_PublicDNS" android:title="PublicDNSをコピー" android:icon="@drawable/ic_menu_clip"></item>
 </menu>

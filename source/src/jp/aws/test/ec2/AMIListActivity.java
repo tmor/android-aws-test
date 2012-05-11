@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 271 $
+ * $Revision: 275 $
  */
 
 package jp.aws.test.ec2;
@@ -108,7 +108,7 @@ public class AMIListActivity extends AlertActivity implements
 
 				});
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // レイアウトを指定。アイコンなし：simple_spinner_item
-																				// アイコンあり：simple_spinner_dropdown_item
+		// アイコンあり：simple_spinner_dropdown_item
 
 		// アイテムを追加します
 		int i = 0, pos = 0;
@@ -201,7 +201,7 @@ public class AMIListActivity extends AlertActivity implements
 
 	/**
 	 * List要素クリック時の処理
-	 *
+	 * 
 	 * 選択されたエンティティを詰めて参照画面へ遷移する
 	 */
 	public void onItemClick(AdapterView<?> parent, View view, int position,

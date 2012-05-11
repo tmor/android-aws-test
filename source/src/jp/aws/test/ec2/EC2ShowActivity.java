@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 266 $
+ * $Revision: 275 $
  */
 
 package jp.aws.test.ec2;
@@ -170,6 +170,10 @@ public class EC2ShowActivity extends AlertActivity {
 			break;
 		case R.id.Clipboard:
 			copyClipboard();
+			break;
+		case R.id.Clipboard_PublicDNS:
+			ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			cm.setText(publicDnsName.getText());
 			break;
 		}
 		return true;

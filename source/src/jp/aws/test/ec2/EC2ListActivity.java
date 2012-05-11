@@ -17,6 +17,7 @@ import jp.aws.test.MultiLineListRowImpl;
 import jp.aws.test.AwsTestActivity;
 import jp.aws.test.MyPrefs;
 import jp.aws.test.R;
+import jp.aws.test.TtsImpl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -55,6 +57,7 @@ import android.widget.Spinner;
  */
 public class EC2ListActivity extends AlertActivity implements
 		OnItemClickListener, AdapterView.OnItemSelectedListener {
+
 	// 一覧表示用ListView
 	private ListView listView = null;
 
@@ -183,7 +186,6 @@ public class EC2ListActivity extends AlertActivity implements
 
 	// / コンテキストメニュー選択
 	public boolean onContextItemSelected(MenuItem item) {
-
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 		final EC2Item ec2Item = ec2item_list_cache.get(info.position);
@@ -369,6 +371,16 @@ public class EC2ListActivity extends AlertActivity implements
 	public void onNothingSelected(AdapterView parent) {
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			// このActivityをTopにしたいので戻るを無効
+			return true;
+		}
+		return false;
+
+	}
+
 	/**
 	 * オプションメニューの生成
 	 */
@@ -377,6 +389,14 @@ public class EC2ListActivity extends AlertActivity implements
 		MenuInflater inflater = getMenuInflater();
 		// XMLで定義したmenuを指定する。
 		inflater.inflate(R.menu.menu, menu);
+
+		return true;
+	}
+
+	// / メニュー表示毎
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
 		return true;
 	}
 

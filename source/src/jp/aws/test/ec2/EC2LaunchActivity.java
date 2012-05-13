@@ -4,14 +4,12 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 275 $
+ * $Revision: 281 $
  */
 
 package jp.aws.test.ec2;
 
-import jp.aws.test.AwsTestActivity;
 import jp.aws.test.R;
-import jp.aws.test.TtsImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -453,7 +451,7 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 			List<String> itemList = new ArrayList<String>();
 
 			try {
-				EC2Instance dao = new EC2Instance(AwsTestActivity.clientManager);
+				EC2Instance dao = new EC2Instance(EC2ListActivity.clientManager());
 				if (keyPair_cache.isEmpty()) {
 					keyPair_cache = dao.getKeyPairs();
 				}
@@ -520,8 +518,8 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
-								AwsTestActivity.tts
-										.startTTS(getString(R.string.tts_ec2_launch));
+								EC2ListActivity.tts()
+										.speak(getString(R.string.tts_ec2_launch));
 								LaunchTask task = new LaunchTask();
 								task.execute();
 							}
@@ -558,7 +556,7 @@ public class EC2LaunchActivity extends AlertActivity implements OnClickListener 
 			List<Instance> itemList = new ArrayList<Instance>();
 
 			try {
-				EC2Instance dao = new EC2Instance(AwsTestActivity.clientManager);
+				EC2Instance dao = new EC2Instance(EC2ListActivity.clientManager());
 				itemList = dao.launchEC2Instances(
 						amiItem.imageId,
 						1,

@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 275 $
+ * $Revision: 281 $
  */
 
 package jp.aws.test.ec2;
@@ -140,6 +140,7 @@ public class EC2ShowActivity extends AlertActivity {
 	class PublicDNSSpan extends ClickableSpan {
 		@Override
 		public void onClick(View widget) {
+			if(ec2Item.publicDnsName.equals("")) return;
 			String url = "http://" + ec2Item.publicDnsName + "/";
 			Uri uri = Uri.parse(url);
 			Intent intent = new Intent(Intent.ACTION_VIEW, uri);

@@ -9,12 +9,12 @@
 
 package jp.aws.test.ec2;
 
+import jp.aws.test.AmazonClientManager;
 import jp.aws.test.KeyValueArrayAdapter;
 import jp.aws.test.Converter;
 import jp.aws.test.MultiLineListRow;
 import jp.aws.test.MultiLineListRowAdapter;
 import jp.aws.test.MultiLineListRowImpl;
-import jp.aws.test.AwsTestActivity;
 import jp.aws.test.MyPrefs;
 import jp.aws.test.R;
 import jp.aws.test.TtsImpl;
@@ -30,6 +30,7 @@ import jp.aws.test.AlertActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,6 +59,16 @@ import android.widget.Spinner;
 public class EC2ListActivity extends AlertActivity implements
 		OnItemClickListener, AdapterView.OnItemSelectedListener {
 
+	public static final int REQUEST_CODE_PREFS = 1; // 設定画面
+
+	public static boolean isDebug = false; // デバッグ中フラグ
+	private static AmazonClientManager _clientManager = null; // aws client
+	private final static String TAG = EC2ListActivity.class.getPackage()
+			.getName() + "." + EC2ListActivity.class.getSimpleName();
+	private static TtsImpl _tts = null; // tts.
+										// finish()するとonDestory()が呼ばれて使えなくなる
+	public static Context context; // getApplicationContext()
+
 	// 一覧表示用ListView
 	private ListView listView = null;
 
@@ -71,11 +82,41 @@ public class EC2ListActivity extends AlertActivity implements
 	static final int MENU_EC2_START = 3;
 	static final int MENU_EC2_STOP = 4;
 
+	/**
+	 * staticイニシャライザ
+	 * メモリ不足の時やクラスが再ロードした際に、static変数が初期化されるためNullPointerExceptionの防止
+	 */
+	static {
+		// デバッグフラグ
+		isDebug = Debug.isDebuggerConnected();
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// 自動生成されたR.javaの定数を指定してXMLからレイアウトを生成
 		setContentView(R.layout.main);
+
+		// アプリケーションコンテキストを保存
+		context = getApplicationContext();
+
+		// aws clientを初期化
+		clientManager();
+
+		// TTSは初期化
+		tts();
+
+		if (isDebug) {
+			// デバッグ時にstrings.xmlの値を使う
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString("prefs_account_access_key",
+					getString(R.string.debug_access_key));
+			editor.putString("prefs_account_secret_key",
+					getString(R.string.debug_secret_key));
+			editor.commit();
+		}
 
 		// XMLで定義したandroid:idの値を指定してListViewを取得します。
 		listView = (ListView) findViewById(R.id.list_view);
@@ -152,6 +193,46 @@ public class EC2ListActivity extends AlertActivity implements
 		ec2item_list_cache = new ArrayList<EC2Item>();
 	}
 
+	@Override
+	protected void onDestroy() {
+		if (_tts != null) {
+			_tts.destroy(); // TTSの破棄
+			_tts = null;
+		}
+
+		super.onDestroy();
+	}
+
+	/**
+	 * AmazonClientManagerインスタンスを返すsingleton実装
+	 *
+	 * @return
+	 * @note - Activityが破棄されるとNullPointerExceptionが発生するため
+	 */
+	public static AmazonClientManager clientManager() {
+		// aws clientを初期化
+		if (_clientManager == null) {
+			_clientManager = new AmazonClientManager(context);
+		}
+
+		return _clientManager;
+	}
+
+	/**
+	 * TtsImplインスタンスを返すsingleton実装
+	 *
+	 * @return
+	 * @note - Activityが破棄されるとNullPointerExceptionが発生するため
+	 */
+	public static TtsImpl tts() {
+		// aws clientを初期化
+		if (_tts == null) {
+			_tts = new TtsImpl(context);
+		}
+
+		return _tts;
+	}
+
 	// コンテキストメニュー
 	public void onCreateContextMenu(ContextMenu menu, View view,
 			ContextMenuInfo menuInfo) {
@@ -189,8 +270,7 @@ public class EC2ListActivity extends AlertActivity implements
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 		final EC2Item ec2Item = ec2item_list_cache.get(info.position);
-		final EC2Instance ec2Instance = new EC2Instance(
-				AwsTestActivity.clientManager);
+		final EC2Instance ec2Instance = new EC2Instance(clientManager());
 
 		if (ec2Item.instanceId.equals("")) {
 			// インスタンスidが無い場合は終了
@@ -218,8 +298,9 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
-										AwsTestActivity.tts
-												.startTTS(getString(R.string.tts_ec2_terminate));
+
+										tts().speak(
+												getString(R.string.tts_ec2_terminate));
 										ec2Instance
 												.terminate(ec2Item.instanceId);
 									} catch (Exception e) {
@@ -250,8 +331,8 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
-										AwsTestActivity.tts
-												.startTTS(getString(R.string.tts_ec2_reboot));
+										tts().speak(
+												getString(R.string.tts_ec2_reboot));
 										ec2Instance.reboot(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す
@@ -281,8 +362,9 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
-										AwsTestActivity.tts
-												.startTTS(getString(R.string.tts_ec2_start));
+
+										tts().speak(
+												getString(R.string.tts_ec2_start));
 										ec2Instance.start(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す
@@ -313,8 +395,9 @@ public class EC2ListActivity extends AlertActivity implements
 										int whichButton) {
 									/* ここにYESの処理 */
 									try {
-										AwsTestActivity.tts
-												.startTTS(getString(R.string.tts_ec2_stop));
+
+										tts().speak(
+												getString(R.string.tts_ec2_stop));
 										ec2Instance.stop(ec2Item.instanceId);
 									} catch (Exception e) {
 										setStackAndPost(e); // エラーダイアログを出す
@@ -371,16 +454,13 @@ public class EC2ListActivity extends AlertActivity implements
 	public void onNothingSelected(AdapterView parent) {
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			// このActivityをTopにしたいので戻るを無効
-			return true;
-		}
-		return false;
-
-	}
-
+	/*
+	 * @Override public boolean onKeyDown(int keyCode, KeyEvent event) { if
+	 * (keyCode == KeyEvent.KEYCODE_BACK) { // このActivityをTopにしたいので戻るを無効 return
+	 * true; } return false;
+	 *
+	 * }
+	 */
 	/**
 	 * オプションメニューの生成
 	 */
@@ -415,7 +495,7 @@ public class EC2ListActivity extends AlertActivity implements
 		case R.id.Account:
 			// 設定画面へ遷移
 			startActivityForResult(new Intent(this, jp.aws.test.MyPrefs.class),
-					AwsTestActivity.REQUEST_CODE_PREFS);
+					REQUEST_CODE_PREFS);
 			break;
 		case R.id.Launch:
 			// インスタンスの起動。AMI一覧画面へ遷移
@@ -435,14 +515,14 @@ public class EC2ListActivity extends AlertActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 
 		// 設定画面を閉じた
-		if (requestCode == AwsTestActivity.REQUEST_CODE_PREFS) {
+		if (requestCode == REQUEST_CODE_PREFS) {
 
 			// プリファレンスオブジェクトの取得(1)
 			SharedPreferences prefs = PreferenceManager
 					.getDefaultSharedPreferences(this);
 
 			// プリファレンス読み込み
-			if (AwsTestActivity.isDebug) {
+			if (isDebug) {
 				// デバッグ時はリソースから取得
 				Log.d("prefs_account_access_key",
 						prefs.getString("prefs_account_access_key", ""));
@@ -456,7 +536,7 @@ public class EC2ListActivity extends AlertActivity implements
 			// editor.commit();
 
 			// 設定変更されたのでaws clientインスタンスを初期化
-			AwsTestActivity.clientManager.clearClients();
+			clientManager().clearClients();
 
 			// キャッシュ消去
 			ec2item_list_cache.clear();
@@ -526,7 +606,7 @@ public class EC2ListActivity extends AlertActivity implements
 			try {
 				// 一覧データの取得をバックグラウンドで実行
 				// EC2ItemDao dao = new EC2ItemDao(EC2ListActivity.this);
-				EC2Instance dao = new EC2Instance(AwsTestActivity.clientManager);
+				EC2Instance dao = new EC2Instance(clientManager());
 				List<EC2Item> list = null;
 
 				if (ec2item_list_cache.isEmpty()) {

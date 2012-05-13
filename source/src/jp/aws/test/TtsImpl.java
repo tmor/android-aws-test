@@ -4,13 +4,15 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 275 $
+ * $Revision: 281 $
  */
 package jp.aws.test;
 
 import java.util.Locale;
 
-import android.app.Activity;
+import jp.aws.test.ec2.EC2ListActivity;
+
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -18,16 +20,17 @@ import android.util.Log;
 
 public class TtsImpl implements TextToSpeech.OnInitListener {
 	public static TextToSpeech tts = null;
-	private final static String TAG = AwsTestActivity.class.getSimpleName();
-	private Activity activity = null;
+	private final static String TAG = TtsImpl.class.getPackage()
+			.getName() + "." + TtsImpl.class.getSimpleName();
+	private Context context = null;
 
-	public TtsImpl(Activity activity) {
-		this.activity = activity;
+	public TtsImpl(Context context) {
+		this.context = context;
 		// TTS初期化
-		if(tts != null){
+		if (tts != null) {
 			destroy();
 		}
-		tts = new TextToSpeech(activity, this);
+		tts = new TextToSpeech(context, this);
 	}
 
 	public void destroy() {
@@ -60,9 +63,9 @@ public class TtsImpl implements TextToSpeech.OnInitListener {
 	 * @param text
 	 *            読み上げたいテキスト
 	 */
-	public void startTTS(String text) {
+	public void speak(String text) {
 		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this.activity);
+				.getDefaultSharedPreferences(this.context);
 		boolean tts_enable = prefs.getBoolean("prefs_tts_enable", false);
 
 		if (tts != null && tts_enable) {

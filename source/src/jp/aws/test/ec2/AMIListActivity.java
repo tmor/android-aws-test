@@ -4,7 +4,7 @@
  * @author tmor
  * @licence Apache License, Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
  *
- * $Revision: 275 $
+ * $Revision: 281 $
  */
 
 package jp.aws.test.ec2;
@@ -14,7 +14,6 @@ import jp.aws.test.Converter;
 import jp.aws.test.MultiLineListRow;
 import jp.aws.test.MultiLineListRowAdapter;
 import jp.aws.test.MultiLineListRowImpl;
-import jp.aws.test.AwsTestActivity;
 import jp.aws.test.MyPrefs;
 import jp.aws.test.R;
 
@@ -201,7 +200,7 @@ public class AMIListActivity extends AlertActivity implements
 
 	/**
 	 * List要素クリック時の処理
-	 * 
+	 *
 	 * 選択されたエンティティを詰めて参照画面へ遷移する
 	 */
 	public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -258,7 +257,8 @@ public class AMIListActivity extends AlertActivity implements
 			try {
 				// 一覧データの取得をバックグラウンドで実行
 				// AMIItemDao dao = new AMIItemDao(EC2ListActivity.this);
-				EC2Instance dao = new EC2Instance(AwsTestActivity.clientManager);
+				EC2Instance dao = new EC2Instance(
+						EC2ListActivity.clientManager());
 				List<AMIItem> list = null;
 
 				HashMap<String, String> filter = string2map(item.first);
